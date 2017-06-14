@@ -1,16 +1,22 @@
 package fr.pe.hack.test;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.util.UUID;
 
 /**
  * Created by christophe on 12/06/17.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class User {
 
     public String date_of_birth;
     public String full_name;
     public String nickname;
     public String uuid;
+
+    public User() {
+    }
 
     public User(String date_of_birth, String full_name) {
         this.date_of_birth = date_of_birth;

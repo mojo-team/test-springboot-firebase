@@ -19,14 +19,17 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("firebase")
-public class ControllerFirebase {
+public class ControllerFirebaseCallBack {
 
     @Value(value = "classpath:test-8a7fd6d9e7b0.json")
     private Resource monTokenFirebase;
 
     private static FirebaseApp maBaseFirebase = null;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ControllerFirebase.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ControllerFirebaseCallBack.class);
+
+    private Object reponseFirebase = null;
+
 
     @RequestMapping("ping")
     public String testDeConnexionAFirebase() throws IOException {
@@ -55,24 +58,37 @@ public class ControllerFirebase {
 
     }
 
-    @RequestMapping("lit")
-    public String testDeLectureDansFirebase(@RequestParam String idUser) throws IOException {
+    @RequestMapping("litValeur")
+    public String litUneValeurSimple(@RequestParam String idUser) throws IOException {
         creeLaConnexionAFirebase();
 
         DatabaseReference usersRef = pointeVersLaBaseDesUsers();
 
         // Pour retrouver juste la valeur d'un noeud
         DatabaseReference unUser = usersRef.child(idUser).child("nickname");
-        unUser.addListenerForSingleValueEvent(new ValueEventListener() {
+
+        ValueEventListener valueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String nickname = dataSnapshot.getValue(String.class);
                 LOGGER.error("Nickname : " + nickname);
+                reponseFirebase = nickname;
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) { }
-        });
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        };
+        unUser.addListenerForSingleValueEvent(valueEventListener);
+        return "OK - " + reponseFirebase;
+    }
+
+
+    @RequestMapping("litFeuilles")
+    public String litUneListeDeProprietes(@RequestParam String idUser) throws IOException {
+        creeLaConnexionAFirebase();
+
+        DatabaseReference usersRef = pointeVersLaBaseDesUsers();
 
         // Retrouve toutes les propriétés d'un noeud (si celui-ci n'a que des feuilles)
         usersRef.child(idUser).addChildEventListener(new ChildEventListener() {
@@ -80,17 +96,34 @@ public class ControllerFirebase {
             // Un callback à cette méthode par propriété
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 LOGGER.error("Propriété : " + dataSnapshot.getValue());
+                reponseFirebase = dataSnapshot.getValue();
             }
 
             @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) { }
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+            }
+
             @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) { }
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+            }
+
             @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) { }
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+            }
+
             @Override
-            public void onCancelled(DatabaseError databaseError) { }
+            public void onCancelled(DatabaseError databaseError) {
+            }
         });
+
+        return "OK - " + reponseFirebase;
+    }
+
+    @RequestMapping("litNoeuds")
+    public String litUneListeDeNoeuds() throws IOException {
+        creeLaConnexionAFirebase();
+
+        DatabaseReference usersRef = pointeVersLaBaseDesUsers();
 
         // Retrouve tous les sous-noeuds d'un noeud
         usersRef.addChildEventListener(new ChildEventListener() {
@@ -99,6 +132,7 @@ public class ControllerFirebase {
             // Chaque "value" retournée est une HashMap contenant toutes les "feuilles" du noeud
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 LOGGER.error("User : " + dataSnapshot.getValue() + " - classe : " + dataSnapshot.getValue().getClass().getName());
+                reponseFirebase = dataSnapshot.getValue();
             }
 
             @Override
@@ -111,7 +145,7 @@ public class ControllerFirebase {
             public void onCancelled(DatabaseError databaseError) { }
         });
 
-        return"OK";
+        return "OK - " + reponseFirebase;
     }
 
     private DatabaseReference pointeVersLaBaseDesUsers() {
