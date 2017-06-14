@@ -1,0 +1,14 @@
+env:
+  global:
+    secure: SB6W2DlUEOxsLj7Uu93eLsdn4zlFDjAIZgUUHJh8ri68r0/cxW4ATkZKhHdOJt9Z9XxBpSH1TyDQIHcfz2aEu8NPZ43CZYTOP7e7HJF4d1dJGM9niulu8Py8LT08t+dzavfaI7QUM8LkmHN2jRTXWGiAJ6jc/dRuju5t3E+xjgLkb33I4IsTBaekz+kAnV3rQtaMjjwNGOS2c5hY19wnyc+EeBjUNPcQFT/r4E89R0vTB9QQktMOxoJGIWvsyvCiQlIla75eUpo8eDdQHQh7F3KOvRsvJYDdEZDsFA7nd8ET7GZj1s3e8+4nUpLOY1vqeJcVQx1UXgVNKzwsgAUFq4K+nGZqnURTGEIpA1Cndk6wrEMCMbDpFPfsnfEqnugGYTR9Mp5qx+hQuGQY5geqpK4sN3p4obv8Zh8U0YSebMfAUxGSoORWa/90Gt7OqSWIW3jMOmcGmqNL272wiT6a0+vRcjk9Io7A6tr5hEczC6vTERkdluHGLoYOiCA0Skl5acoQCaSq6dx7GutlNtBDgRM/R+eQLdSjyZZIc4URh3NUBXUd8wfU6beXe4A092fK0e1ZL744lR/P8k4s3OxEUTyQBUzIv/Fk7VSQEKLrxGHmZ2NcHdswXl71PCvuC6b5G0amTivJBoql9/G50YQONzS5Zl9UGE01Nm9ngeFbFYo=
+language: java
+dist: trusty
+jdk: openjdk8
+addons:
+  ssh_known_hosts: vivatech.otakeh.com
+before_install:
+- sudo apt-get install sshpass openssh-client
+script: ./mvnw package
+deploy:
+  - provider: script
+    script: "./deploy.sh"
