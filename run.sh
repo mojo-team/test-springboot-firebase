@@ -1,9 +1,15 @@
 #!/bin/sh
 
+set -x
+
 PID=$( cat ./run.pid )
 
-kill -11 $PID
+if [ "$PID" != "" ]
+then
+    kill -ABRT $PID
+    > ./run.pid
+fi
 
-nohup java -jar test-springboot-firebase.jar &
+nohup java -jar test-springboot-firebase.jar > ./run.log &
 
-echo $! > ./run.pid
+jps -l | grep test-springboot-firebase.jar | cut -d' ' -f1 > ./run.pid
