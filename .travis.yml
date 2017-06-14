@@ -11,5 +11,6 @@ before_install:
 - sudo apt-get install sshpass openssh-client
 script: ./mvnw package
 deploy:
-- provider: script
+  skip_cleanup: true
+  provider: script
   script: ./deploy.sh
